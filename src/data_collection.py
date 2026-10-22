@@ -1,15 +1,19 @@
 import requests
 import pandas as pd
 
-username = "Cillian2525"
+usernames = ["SOK1954", "HASHEM_NAjd", "GaLaXy14112191014", "sync7122", "Cillian2525"]
 
-## object to store content from api link (link contains monthly games for month of my choosing)
-response = requests.get(f"https://api.chess.com/pub/player/{username}/games/2025/08",
-    headers={"User-Agent": "ChessAnalyticsProject hegartycillian04@gmail.com"}) ## user agent prevents 403 response
+## function to retrieve content from api link (link contains monthly games for month of my choosing)
+def fetch_games(username):
+    response = requests.get(f"https://api.chess.com/pub/player/{username}/games/2026/09",
+        headers={"User-Agent": "ChessAnalyticsProject hegartycillian04@gmail.com"}) ## user agent prevents 403 response
+    return response.json() # storing json file
+
+## loops thrugh each player and gets data for that months games
+#for username in usernames:
+#    print(fetch_games(username))
 
 # print(response.status_code) ## checking status of request
-
-data = response.json() # storing json file
 
 ## getting colnames these tables contain
 # df = pd.json_normalize(data["games"])
@@ -26,4 +30,7 @@ def clock_check(data):
     print("Total games:", len(data["games"]))
     print("Percentage:", round(clock_games / len(data["games"]) * 100, 2), "%")
 
-clock_check(data)
+for username in usernames:
+    print(username)
+    clock_check(fetch_games(username))
+    print("\t")
