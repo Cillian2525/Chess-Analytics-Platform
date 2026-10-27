@@ -9,6 +9,8 @@ def fetch_games(username):
         headers={"User-Agent": "ChessAnalyticsProject hegartycillian04@gmail.com"}) ## user agent prevents 403 response
     return response.json() # storing json file
 
+
+
 ## loops thrugh each player and gets data for that months games
 #for username in usernames:
 #    print(fetch_games(username))
@@ -30,7 +32,26 @@ def clock_check(data):
     print("Total games:", len(data["games"]))
     print("Percentage:", round(clock_games / len(data["games"]) * 100, 2), "%")
 
-for username in usernames:
+# print total games per username as well as clock data presence rate
+#for username in usernames:
     print(username)
     clock_check(fetch_games(username))
     print("\t")
+
+# function to find average rating of each user for that time period
+def get_rating(username):
+    data = fetch_games(username)
+
+    ratings = []
+
+    for game in data["games"]:
+        if game["white"]["username"].lower() == username.lower():
+            ratings.append(game["white"]["rating"])
+        elif game["black"]["username"].lower() == username.lower():
+            ratings.append(game["black"]["rating"])
+    
+    print(username, round(sum(ratings) / len(ratings)))
+
+#for username in usernames:
+    get_rating(username)
+
