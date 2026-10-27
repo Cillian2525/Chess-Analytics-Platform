@@ -9,7 +9,15 @@ def fetch_games(username):
         headers={"User-Agent": "ChessAnalyticsProject hegartycillian04@gmail.com"}) ## user agent prevents 403 response
     return response.json() # storing json file
 
+# function to filter fetched games to only include rapid time classes (returns games, not original fetched data)
+def rapid_games(data):
+    rapid_games = []
 
+    for game in data["games"]:
+        if game["time_class"] == "rapid":
+            rapid_games.append(game)
+    
+    return rapid_games
 
 ## loops thrugh each player and gets data for that months games
 #for username in usernames:
@@ -38,13 +46,14 @@ def clock_check(data):
     clock_check(fetch_games(username))
     print("\t")
 
-# function to find average rating of each user for that time period
-def get_rating(username):
+# function to find average rating of each user for that time period (rapid games only)
+def get_rapid_rating(username):
     data = fetch_games(username)
+    rapid_data = rapid_games(data)
 
     ratings = []
 
-    for game in data["games"]:
+    for game in rapid_data:
         if game["white"]["username"].lower() == username.lower():
             ratings.append(game["white"]["rating"])
         elif game["black"]["username"].lower() == username.lower():
@@ -52,6 +61,7 @@ def get_rating(username):
     
     print(username, round(sum(ratings) / len(ratings)))
 
+# prints average rapid ratings
 #for username in usernames:
-    get_rating(username)
+    get_rapid_rating(username)
 
