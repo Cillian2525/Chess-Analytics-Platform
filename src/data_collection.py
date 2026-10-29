@@ -4,8 +4,8 @@ import pandas as pd
 usernames = ["SOK1954", "HASHEM_NAjd", "GaLaXy14112191014", "sync7122", "Cillian2525"]
 
 ## function to retrieve content from api link (link contains monthly games for month of my choosing)
-def fetch_games(username):
-    response = requests.get(f"https://api.chess.com/pub/player/{username}/games/2026/09",
+def fetch_games(username, year, month):
+    response = requests.get(f"https://api.chess.com/pub/player/{username}/games/{year}/{month:02d}",
         headers={"User-Agent": "ChessAnalyticsProject hegartycillian04@gmail.com"}) ## user agent prevents 403 response
     return response.json() # storing json file
 
