@@ -2,6 +2,8 @@ import requests
 import pandas as pd
 
 usernames = ["SOK1954", "HASHEM_NAjd", "GaLaXy14112191014", "sync7122", "Cillian2525"]
+months = [1,2,3,4,5,6,7,8,9,10,11,12]
+years = [2026]
 
 ## function to retrieve content from api link (link contains monthly games for month of my choosing)
 def fetch_games(username, year, month):
@@ -70,23 +72,30 @@ def get_rapid_rating(username, year, month):
     
     print(username, round(sum(ratings) / len(ratings)))
 
-# prints average rapid ratings for chosen every month from the start of 2024 (not labelled)
-months = [1,2,3,4,5,6,7,8,9,10,11,12]
-years = [2024, 2025, 2026]
-for username in usernames:
+## prints average rapid ratings for chosen every month from the start of 2024 (not labelled)
+#for username in usernames:
     for year in years:
         for month in months:
             get_rapid_rating(username, year, month)
     
 
 ## funciton to save all rapid games from chosen months, years and user and store in all_games
+## takes in lists
 def fetch_all_rapid_games(usernames, years, months):
-    all_games = []
+    all_games = {}
+
+    for username in usernames:
+        all_games[username] = []
 
     for username in usernames:
         for year in years:
             for month in months:
                 data = fetch_games(username, year, month)
-                all_games.extend(rapid_games(data))
+                all_games[username].extend(rapid_games(data))
     
     return all_games
+
+## calling fetch_all_rapid_games to save users games to all_games variable (uses variables at top of file)
+games = fetch_all_rapid_games(usernames, years, months)
+
+print(games["Cillian2525"][0])
