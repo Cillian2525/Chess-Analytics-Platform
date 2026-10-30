@@ -1,9 +1,13 @@
 import requests
 import pandas as pd
 
+##### VARIABLES #####
+
 usernames = ["SOK1954", "HASHEM_NAjd", "GaLaXy14112191014", "sync7122", "Cillian2525"]
 months = [1,2,3,4,5,6,7,8,9,10,11,12]
 years = [2026]
+
+##### FUNCTIONS #####
 
 ## function to retrieve content from api link (link contains monthly games for month of my choosing)
 def fetch_games(username, year, month):
@@ -95,7 +99,10 @@ def fetch_all_rapid_games(usernames, years, months):
     
     return all_games
 
-## calling fetch_all_rapid_games to save users games to all_games variable (uses variables at top of file)
+##### STORING COLLECTED RAPID GAMES #####
+import json
+
 games = fetch_all_rapid_games(usernames, years, months)
 
-print(games["Cillian2525"][0])
+with open("data/raw/rapid_games.json", "w") as f: # w for writing a file (creates or overwrites)
+    json.dump(games, f)
