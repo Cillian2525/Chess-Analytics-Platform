@@ -31,6 +31,11 @@ def rapid_games(data):
 
 ## check what percent of games contain clock data
 def clock_check(data):
+
+    if len(data["games"]) == 0:
+        print("No games found for this month.")
+        return
+    
     clock_games = sum(
         "[%clk" in game["pgn"]
         for game in data["games"]
@@ -40,15 +45,15 @@ def clock_check(data):
     print("Total games:", len(data["games"]))
     print("Percentage:", round(clock_games / len(data["games"]) * 100, 2), "%")
 
-# print total games per username as well as clock data presence rate
+# print total games per username as well as clock data presence rate (for chosen period)
 #for username in usernames:
     print(username)
-    clock_check(fetch_games(username))
+    clock_check(fetch_games(username, 2026, 5))
     print("\t")
 
 # function to find average rating of each user for that time period (rapid games only)
-def get_rapid_rating(username):
-    data = fetch_games(username)
+def get_rapid_rating(username, year, month):
+    data = fetch_games(username, year, month)
     rapid_data = rapid_games(data)
 
     ratings = []
@@ -59,9 +64,29 @@ def get_rapid_rating(username):
         elif game["black"]["username"].lower() == username.lower():
             ratings.append(game["black"]["rating"])
     
+    if len(ratings) == 0:
+        print(username, "No rapid games found")
+        return
+    
     print(username, round(sum(ratings) / len(ratings)))
 
-# prints average rapid ratings
-#for username in usernames:
-    get_rapid_rating(username)
+# prints average rapid ratings for chosen every month from the start of 2024 (not labelled)
+months = [1,2,3,4,5,6,7,8,9,10,11,12]
+years = [2024, 2025, 2026]
+for username in usernames:
+    for year in years:
+        for month in months:
+            get_rapid_rating(username, year, month)
+    
 
+## funciton to save all rapid games from chosen months, years and user and store in all_games
+def fetch_all_rapid_games(usernames, years, months):
+    all_games = []
+
+    for username in usernames:
+        for year in years:
+            for month in months:
+                data = fetch_games(username, year, month)
+                all_games.extend(rapid_games(data))
+    
+    return all_games
