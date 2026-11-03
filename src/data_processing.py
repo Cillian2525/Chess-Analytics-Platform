@@ -1,5 +1,7 @@
 import json
 import pandas as pd
+import chess.pgn ## for reading in gmae pgns
+import io ## treat a pgn strign as a file
 
 ## loading the saved games
 with open("data/raw/rapid_games.json", "r") as f: # open in read mode
@@ -30,4 +32,4 @@ black = pd.json_normalize(df["black"]).add_prefix("black_")
 ## starting by removing the white and black dictionaries
 df = df.drop(columns=["white", "black"])
 df = pd.concat([df, white, black], axis = 1) ## axis = 1 puts rows
-print(df.columns)
+
