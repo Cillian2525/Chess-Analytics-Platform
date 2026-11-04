@@ -33,3 +33,16 @@ black = pd.json_normalize(df["black"]).add_prefix("black_")
 df = df.drop(columns=["white", "black"])
 df = pd.concat([df, white, black], axis = 1) ## axis = 1 puts rows
 
+## parsing one game to test
+pgn = io.StringIO(df["pgn"].iloc[1]) # makes string a file to be used below
+game = chess.pgn.read_game(pgn)
+#print(game)
+
+## headers to use wiht newly parsed game
+# print(game.headers["White"])
+# print(game.headers["Black"])
+# print(game.headers["WhiteElo"])
+
+## going through each mvoe of the game
+for move in game.mainline_moves():
+    print(move)
