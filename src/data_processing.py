@@ -52,8 +52,24 @@ game = chess.pgn.read_game(pgn)
 ## (SAN = standard algebraic notation)
 ## each node in the or loop contaisn move anc clock position
 board = game.board()
+data = []
+strings = ["White", "Black"]
+num_moves = game.end().ply()
+i = 0
+
 for node in game.mainline():
     san_move = board.san(node.move)
     move_number = node.parent.board().fullmove_number
-    print(f"{move_number}. {san_move}", node.clock())
+    move = {
+        "move_number": move_number,
+        "colour": strings[i % 2],
+        "move": san_move,
+        "clock_time": node.clock()
+    }
+    data.append(move)
     board.push(node.move)
+    i += 1
+
+game_df = pd.DataFrame(data)
+print(game_df.to_string())
+
