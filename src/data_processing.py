@@ -33,11 +33,6 @@ black = pd.json_normalize(df["black"]).add_prefix("black_")
 df = df.drop(columns=["white", "black"])
 df = pd.concat([df, white, black], axis = 1) ## axis = 1 puts rows
 
-## parsing one game to test
-pgn = io.StringIO(df["pgn"].iloc[1]) # makes string a file to be used below
-game = chess.pgn.read_game(pgn)
-#print(game)
-
 ## headers to use wiht newly parsed game
 # print(game.headers["White"])
 # print(game.headers["Black"])
@@ -47,29 +42,49 @@ game = chess.pgn.read_game(pgn)
 #for move in game.mainline():
     #print(move)
 
-## making a board object to display moves in standard chess notation
-## only contains the starting position, still have to loop thorugh game and apply the moves to board
-## (SAN = standard algebraic notation)
-## each node in the or loop contaisn move anc clock position
-board = game.board()
-data = []
-strings = ["White", "Black"]
-num_moves = game.end().ply()
-i = 0
+full_df = []
 
-for node in game.mainline():
-    san_move = board.san(node.move)
-    move_number = node.parent.board().fullmove_number
-    move = {
-        "move_number": move_number,
-        "colour": strings[i % 2],
-        "move": san_move,
-        "clock_time": node.clock()
-    }
-    data.append(move)
-    board.push(node.move)
-    i += 1
+## creating a function to parse games
+def game_parser(game):
+    ## making a board object to display moves in standard chess notation
+    ## only contains the starting position, still have to loop thorugh game and apply the moves to board
+    ## (SAN = standard algebraic notation)
+    ## each node in the or loop contaisn move anc clock position
+    board = game.board()
+    game_data = []
+    strings = ["White", "Black"]
+    num_moves = game.end().ply()
+    i = 0
 
-game_df = pd.DataFrame(data)
-print(game_df.to_string())
+    ## for loop fills each row of the dictionary, which will become a dataframe
+    for node in game.mainline():
+        san_move = board.san(node.move)
+        move_number = node.parent.board().fullmove_number
+        move = {
+            "move_number": move_number,
+            "colour": strings[i % 2],
+            "move": san_move,
+            "clock_time": node.clock()
+        }
+        game_data.append(move)
+        board.push(node.move)
+        i += 1
+
+    game_df = pd.DataFrame(game_data)
+    return game_df
+
+for game_id, pgn in enumerate(df["pgn"]):
+    ## converting to format to be used by game_parser
+    game_pgn = io.StringIO(pgn) # makes the string a file to be used below
+    game = chess.pgn.read_game(game_pgn)
+
+    game_df = game_parser(game)
+    game_df["game_id"] = game_id
+
+    full_df.append(game_df)
+
+##combingin all dtaframes into one
+full_df = pd.concat(full_df, ignore_index = True)
+full_df["move_number"] = full_df["move_number"].astype(int) ## removing decimal places
+print(full_df)
 
