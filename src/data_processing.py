@@ -43,6 +43,17 @@ game = chess.pgn.read_game(pgn)
 # print(game.headers["Black"])
 # print(game.headers["WhiteElo"])
 
-## going through each mvoe of the game
-for move in game.mainline_moves():
-    print(move)
+## going through each mvoe of the game (e4e5 format, not standard chess notation)
+#for move in game.mainline():
+    #print(move)
+
+## making a board object to display moves in standard chess notation
+## only contains the starting position, still have to loop thorugh game and apply the moves to board
+## (SAN = standard algebraic notation)
+## each node in the or loop contaisn move anc clock position
+board = game.board()
+for node in game.mainline():
+    san_move = board.san(node.move)
+    move_number = node.parent.board().fullmove_number
+    print(f"{move_number}. {san_move}", node.clock())
+    board.push(node.move)
