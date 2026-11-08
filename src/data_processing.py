@@ -88,3 +88,22 @@ full_df = pd.concat(full_df, ignore_index = True)
 full_df["move_number"] = full_df["move_number"].astype(int) ## removing decimal places
 full_df.to_csv("data/processed/moves.csv", index = False)
 
+## function to check game level clock availability
+def clock_game_check(df):
+    present = 0
+    for i in df["game_id"].unique():
+        if df[df["game_id"] == i]["clock_time"].notna().any():
+            present += 1
+        else:
+            print(f"no time data for game {i}", df[df["game_id"] == i])
+    print(f"{round(100.0 * (present / df['game_id'].nunique()), 2)}% of games contain clock data")
+
+## functoin to check move level clock availability
+def clock_move_check(df):
+    present = 0
+    for i in range(len(df)):
+        if pd.notna(df.iloc[i]["clock_time"]):
+            present += 1
+        else:
+            print(f"no clock data for index {i}")
+    print(f"{round(100.0 * (present / len(df)), 2)}% of moves contain clock data")
