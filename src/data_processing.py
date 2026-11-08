@@ -86,5 +86,5 @@ for game_id, pgn in enumerate(df["pgn"]):
 ##combingin all dtaframes into one
 full_df = pd.concat(full_df, ignore_index = True)
 full_df["move_number"] = full_df["move_number"].astype(int) ## removing decimal places
-print(full_df)
+full_df.to_csv("data/processed/moves.csv", index = False)
 
