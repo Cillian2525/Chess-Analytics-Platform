@@ -67,6 +67,11 @@ def game_parser(game):
             "clock_time": node.clock()
         }
         game_data.append(move)
+
+        if node.move not in board.legal_moves:
+            print("Illegal move found")
+            break
+
         board.push(node.move)
         i += 1
 
@@ -107,3 +112,5 @@ def clock_move_check(df):
         else:
             print(f"no clock data for index {i}")
     print(f"{round(100.0 * (present / len(df)), 2)}% of moves contain clock data")
+
+
