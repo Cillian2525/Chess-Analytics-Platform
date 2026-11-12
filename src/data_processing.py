@@ -33,6 +33,43 @@ black = pd.json_normalize(df["black"]).add_prefix("black_")
 df = df.drop(columns=["white", "black"])
 df = pd.concat([df, white, black], axis = 1) ## axis = 1 puts rows
 
+## creating game_id, result, datetime columns and filtering to fit thje postgresql table
+df["game_id"] = range(len(df)) ## id column for game table
+
+df["result"] = df["white_result"].map({
+    "win": "white_win",
+    "resigned": "white_loss",
+    "checkmated": "white_loss",
+    "abandoned": "white_loss",
+    "timeout": "white_loss",
+    "stalemate": "draw",
+    "repetition": "draw",
+    "insufficient": "draw",
+    "agreed": "draw",
+    "timevsinsufficient": "draw",
+    "50move": "draw"
+})
+
+df["date"] = pd.to_datetime(df["end_time"], unit="s").dt.date
+
+df = df[[
+    "game_id",
+    "username",
+    "white_username",
+    "black_username",
+    "white_rating",
+    "black_rating",
+    "result",
+    "date",
+    "time_control",
+    "time_class",
+    "rated",
+    "url",
+    "pgn"
+]]
+
+df.to_csv("data/processed/games.csv", index=False)
+
 ## headers to use wiht newly parsed game
 # print(game.headers["White"])
 # print(game.headers["Black"])
@@ -82,6 +119,10 @@ for game_id, pgn in enumerate(df["pgn"]):
     ## converting to format to be used by game_parser
     game_pgn = io.StringIO(pgn) # makes the string a file to be used below
     game = chess.pgn.read_game(game_pgn)
+
+    ## skip games with no moves
+    if game.end().ply() == 0:
+        continue
 
     game_df = game_parser(game)
     game_df["game_id"] = game_id
